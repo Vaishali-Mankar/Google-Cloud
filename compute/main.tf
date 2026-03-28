@@ -1,5 +1,5 @@
 resource "google_compute_instance" "default" {
-  name         = "my-instance8"
+  name         = "my-instance9"
   machine_type = "n2-standard-2"
   zone         = "us-central1-a"
 
