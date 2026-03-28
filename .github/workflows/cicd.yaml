@@ -9,51 +9,56 @@ on:
 
 
 jobs:
-  terraform:
+   # JOB 1: Initialization
+  terraform-init:
     runs-on: ubuntu-latest
-
-
-
-    steps:  
+    steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-        
-      - name: Authenticate to Google Cloud (Service Account Key)
-        id: auth
+      - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.SA_KEY }}
-    
-        
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
-
       - name: Terraform Init
         run: |
-         cd ./compute
-         terraform init
+          cd ./compute
+          terraform init
 
-      - name: Terraform Validate
-        run: |
-         cd ./compute
-         terraform validate
-
-         
-
+  # JOB 2: Plan (Runs after Init)
+  terraform-plan:
+    runs-on: ubuntu-latest
+    needs: terraform-init
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.SA_KEY }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: Terraform Init
+        run: cd ./compute && terraform init
       - name: Terraform Plan
-        id: plan
-        run: |
-          cd ./compute
-          terraform plan -no-color > plan_output.txt
-          cat plan_output.txt
-          echo "### Terraform Plan Output" >> $GITHUB_STEP_SUMMARY
-          echo '```terraform' >> $GITHUB_STEP_SUMMARY
-          cat plan_output.txt >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          
+        run: cd ./compute && terraform plan -no-color
+
+  # JOB 3: Apply (Runs after Plan, only on Merge/Push)
+  terraform-apply:
+    runs-on: ubuntu-latest
+    needs: terraform-plan
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.SA_KEY }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: Terraform Init
+        run: cd ./compute && terraform init
       - name: Terraform Apply
-        # This step ONLY runs when code is pushed/merged to main
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          cd ./compute
-          terraform apply -auto-approve
+        run: cd ./compute && terraform apply -auto-approve
