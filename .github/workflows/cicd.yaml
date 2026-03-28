@@ -63,7 +63,7 @@ jobs:
       - name: Terraform Apply
         run: cd ./compute && terraform apply -auto-approve
 
-terraform-destroy:
+ terraform-destroy:
     runs-on: ubuntu-latest
     needs: terraform-destroy
     if: github.event_name == 'workflow_dispatch' 
