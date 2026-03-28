@@ -1,6 +1,7 @@
 name: Terraform GCP
 
 on:
+  pull_request:
   push:
     branches:
       - main
