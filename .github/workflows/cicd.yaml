@@ -28,10 +28,16 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
-        run: terraform init
+        run: 
+         cd compute
+         terraform init
 
       - name: Terraform Validate
-        run: terraform validate
+        run: 
+         cd compute
+         terraform validate
 
       - name: Terraform Plan
-        run: terraform plan -no-color
+        run: 
+         cd compute
+         terraform plan -no-color
