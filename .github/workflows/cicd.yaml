@@ -29,15 +29,15 @@ jobs:
 
       - name: Terraform Init
         run: 
-         cd compute
+         cd /compute
          terraform init
 
       - name: Terraform Validate
         run: 
-         cd compute
+         cd /compute
          terraform validate
 
       - name: Terraform Plan
         run: 
-         cd compute
+         cd /compute
          terraform plan -no-color
