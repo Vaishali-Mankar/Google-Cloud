@@ -1,22 +1,17 @@
 name: Terraform GCP
 
 on:
-  pull_request:
   push:
     branches:
       - main
 
-permissions:
-  contents: read
-  id-token: write
+
 
 jobs:
   terraform:
     runs-on: ubuntu-latest
 
-    env:
-      TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
-      TF_VAR_region: ${{ secrets.GCP_REGION }}
+
 
     steps:  
       - name: Checkout Repo
@@ -28,8 +23,6 @@ jobs:
         with:
           credentials_json: ${{ secrets.SA_KEY }}
     
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
         
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
